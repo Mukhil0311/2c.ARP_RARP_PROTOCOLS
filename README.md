@@ -17,9 +17,102 @@ stored.
 5. Map the IP address with its MAC address and return the MAC address to client.
 P
 ## PROGRAM - ARP
+
+SERVER SIDE:
+
+```
+import socket
+s = socket.socket()
+s.bind(('localhost', 8000))
+s.listen(5)
+print("Server is listening...")
+
+c, addr = s.accept()
+print(f"Connection established with {addr}")
+
+address = {
+    "165.165.80.80": "6A:08:AA:C2",
+    "165.165.79.1": "8A:BC:E3:FA"
+}
+
+while True:
+    ip = c.recv(1024).decode()
+
+    if not ip:  
+        break
+
+    try:
+        mac = address[ip]  # Get the MAC address for the IP
+        print(f"IP: {ip} -> MAC: {mac}")
+        c.send(mac.encode())  
+    except KeyError:
+        print(f"IP: {ip} not found in ARP table.")
+        c.send("Not Found".encode())
+c.close()
+s.close()
+```
+
+CLIENT SIDE 
+
+```
+import socket 
+s=socket.socket() 
+s.connect(('localhost',8000)) 
+while True:    
+    ip=input("Enter logical Address : ")    
+    s.send(ip.encode())    
+    print("MAC Address",s.recv(1024).decode())
+```
 ## OUPUT - ARP
+SERVER SIDE:
+
+![image](https://github.com/Mukhil0311/2c.ARP_RARP_PROTOCOLS/blob/main/Screenshot%202026-05-13%20103616.png)
+
+CLIENT SIDE:
+
+![image](https://github.com/Mukhil0311/2c.ARP_RARP_PROTOCOLS/blob/main/Screenshot%202026-05-13%20103625.png)
+
 ## PROGRAM - RARP
+SERVER SIDE:
+
+
+```
+import socket 
+s=socket.socket() 
+s.bind(('localhost',9000)) 
+s.listen(5) 
+c,addr=s.accept() 
+address={"6A:08:AA:C2":"192.168.1.100","8A:BC:E3:FA":"192.168.1.99"}; 
+while True: 
+    ip=c.recv(1024).decode() 
+    try: 
+        c.send(address[ip].encode()) 
+    except KeyError: 
+        c.send("Not Found".encode())
+```
+
+CLIENT SIDE 
+
+```
+import socket 
+s=socket.socket() 
+s.connect(('localhost',9000)) 
+while True: 
+    ip=input("Enter MAC Address : ")
+    s.send(ip.encode()) 
+    print("Logical Address",s.recv(1024).decode())
+```
 ## OUPUT -RARP
+
+SERVER SIDE:
+
+![image](https://github.com/Mukhil0311/2c.ARP_RARP_PROTOCOLS/blob/main/Screenshot%202026-05-13%20104524.png)
+
+CLIENT SIDE:
+
+![image](https://github.com/Mukhil0311/2c.ARP_RARP_PROTOCOLS/blob/main/Screenshot%202026-05-13%20104534.png)
+
+
 ## RESULT
 Thus, the python program for simulating ARP protocols using TCP was successfully 
 executed.
